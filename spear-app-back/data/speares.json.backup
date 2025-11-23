@@ -1,0 +1,38 @@
+[
+  {
+    "_id": 1234,
+    "fish": "Spanish-mackerel",
+    "fisherman": "Tsoor",
+    "weight": 15.5,
+    "imgUrl":"fake-img",
+    "public":true,
+    "date": 1715904000000
+  },
+  {
+    "_id": 5678,
+    "fish": "AmberJack",
+    "fisherman": "Tsoor",
+    "weight": 10.3,
+    "imgUrl":"fake-img",
+    "public":true,
+    "date": 1715904000000
+  },
+  {
+    "_id": 8457,
+    "fish": "AmberJack",
+    "fisherman": "Tsoor",
+    "weight": 4,
+    "imgUrl":"fake-img",
+    "public":true,
+    "date": 1715904000000
+  },
+  {
+    "_id": 9101,
+    "fish": "Spanish-mackerel",
+    "fisherman": "Tsoor",
+    "weight": 11,
+    "imgUrl":"fake-img",
+    "public":true,
+    "date": 1715904000000
+  }
+]

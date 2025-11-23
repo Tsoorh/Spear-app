@@ -1,0 +1,13 @@
+/* setup */
+@import "./setup/vars.css";
+@import "./setup/layout.css";
+
+/* base */
+@import "./basic/base.css";
+@import "./basic/helpers.css";
+
+/* cmps */
+@import "./cmps/AppFooter.css";
+@import "./cmps/AppHeader.css";
+@import "./cmps/IconBasket.css";
+

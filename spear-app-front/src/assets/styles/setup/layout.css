@@ -1,0 +1,31 @@
+/* mobile-first */
+.grid-container{
+    display: grid;
+    height: 100vh;
+    grid-template-rows: 6rem 1fr 6rem;
+}
+.main{
+    background-color: blue;
+}
+
+/* tablets and above */
+@media (min-width:768px){
+    .grid-container{
+
+    }
+    .main{
+        width: 760px;
+        margin:0 auto;
+    }
+}
+
+/* desktop and above */
+@media (min-width:1200px){
+    .grid-container{
+
+    }
+    .main{
+        width: 1200px;
+        margin:0 auto;
+    }
+}

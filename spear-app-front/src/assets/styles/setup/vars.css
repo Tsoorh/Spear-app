@@ -1,0 +1,7 @@
+:root{
+    /* colors */
+    --clr-bgc1:rgb(228, 228, 228);
+    --clr-bgc2:rgb(228, 228, 228);
+    /* border-raduis */
+    --br:2rem;
+}

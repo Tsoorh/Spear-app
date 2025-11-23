@@ -1,0 +1,17 @@
+.menu-svg{
+    cursor: pointer;
+    border-radius: 0.5rem;
+    padding: 0.2rem;
+    border: 2px black solid;
+    &:hover{
+        background-color: #000;
+        border: 2px #fff solid;
+        color: #fff;
+    }
+}
+
+.active-menu{
+    background-color: #191919;
+    border: 2px #0000003f solid;
+    color: #d3d3d3;
+}

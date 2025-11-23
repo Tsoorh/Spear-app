@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Tsoor Hartov",
+    "username": "tsoorSpearo",
+    "password": 1234,
+    "isAdmin": true,
+    "createdAt": 1763107592659
+  },
+  {
+    "name": "Michaela Hartov",
+    "username": "michSpearo",
+    "password": 1234,
+    "isAdmin": true,
+    "createdAt": 1763107592659
+  },
+  {
+    "name": "Peleg Azulay",
+    "username": "pelegSpearo",
+    "password": 1234,
+    "isAdmin": false,
+    "createdAt": 1763107592659
+  },
+  {
+    "name": "Matan bend",
+    "username": "bendSpearo",
+    "password": 1234,
+    "isAdmin": false,
+    "createdAt": 1763107592659
+  }
+]

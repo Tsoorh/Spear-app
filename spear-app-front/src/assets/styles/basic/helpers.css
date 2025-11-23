@@ -1,0 +1,28 @@
+/* flex */
+.flex{
+    display: flex;
+    &.justify-center{
+        justify-content: center;
+    }
+    &.align-center{
+        align-items: center;
+    }
+    &.column{
+        flex-direction: column;
+    }
+    &.space-between{
+        justify-content: space-between;
+    }
+}
+
+
+
+/* border-radius */
+.border-radius{
+    border-radius: var(--br);
+}
+
+/* shadow */
+.shadow{
+
+}

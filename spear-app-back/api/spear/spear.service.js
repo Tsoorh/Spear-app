@@ -5,6 +5,7 @@ import { loggerService } from "../../service/logger.service.js";
 import { utilService } from "../../service/util.service.js";
 
 const speares = utilService.readJsonFile('./data/speares.json')
+const COLLECTION = 'spear'
 const PAGE_SIZE = 4
 
 export const spearService = {

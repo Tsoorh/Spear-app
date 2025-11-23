@@ -4,11 +4,33 @@ import Cryptr from "cryptr";
 
 const cryptr = new Cryptr(process.env.SECRET_KEY);
 
+
+
 export const authService = {
   login,
   getLoginToken,
   register,
+  getLoginToken,
+  validateToken
 };
+
+function getLoginToken(user) {
+  const jsonUser = JSON.stringify(user);
+  const encUser = cryptr.encrypt(jsonUser);
+  return encUser;
+}
+
+function validateToken(token) {
+  try {
+    const decryptedToken = cryptr.decrypt(token);
+    const loggedInUser = JSON.parse(decryptedToken);
+    return loggedInUser;
+  } catch (err) {
+    loggerService.error("couldnt validateToken:", err);
+    console.log("couldnt validateToken:", err);
+  }
+  return null;
+}
 
 async function login(username, password) {
   const user = await userService.getByUser(username);

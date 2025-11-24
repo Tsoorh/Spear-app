@@ -22,14 +22,14 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
 import { spearRouter } from './api/spear/spear.routes.js';
-// import { userRouter } from './api/user/user.routes.js';
+import { userRouter } from './api/user/user.routes.js';
 import { authRouter } from './api/auth/auth.routes.js';
 import { diveRouter } from './api/dive/dive.routes.js';
 
 
 app.use("/api/spear",spearRouter)
 app.use("/api/dive",diveRouter)
-// app.use("/api/user",userRouter)
+app.use("/api/user",userRouter)
 app.use("/api/auth",authRouter)
 
 

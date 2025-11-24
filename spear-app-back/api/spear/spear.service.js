@@ -1,10 +1,8 @@
-import fs from "fs"
-
-
+import { ObjectId } from "mongodb";
+import { dbService } from "../../service/db.service.js";
 import { loggerService } from "../../service/logger.service.js";
 import { utilService } from "../../service/util.service.js";
 
-const speares = utilService.readJsonFile('./data/speares.json')
 const COLLECTION = 'spear'
 const PAGE_SIZE = 4
 
@@ -15,64 +13,59 @@ export const spearService = {
     save
 }
 
-async function query(filterBy={}) {
-    let spearesToDisplay = speares
+async function query(filterBy = {}) {
     try {
-        if (filterBy?.txt) {
-            const regExp = new RegExp(filterBy.txt, 'i')
-            spearesToDisplay = spearesToDisplay.filter(ctch => regExp.test(ctch.vendor))
-        }
+        const collection = await dbService.getCollection(COLLECTION);
+        const spearPipeline = _getAgrSpearPipeline(filterBy);
+        const spears = await collection.aggregate(pipline)
 
-        if (filterBy?.minSpeed) {
-            spearesToDisplay = spearesToDisplay.filter(ctch => ctch.speed >= filterBy.minSpeed)
-        }
-
-        if ('pageIdx' in filterBy) {
-            const startIdx = filterBy.pageIdx * PAGE_SIZE
-            spearesToDisplay = spearesToDisplay.slice(startIdx, startIdx + PAGE_SIZE)
-        }
-
-        return spearesToDisplay        
+        return await spears.toArray()
     } catch (err) {
-        loggerService.error(`Couldn't get speares`, err);
+        loggerService.error(`Couldn't get speares`);
         throw err
     }
 }
 
-async function getById(ctchId) {
+async function getById(spearId) {
     try {
-        const ctch = speares.find(ctch => ctch._id === ctchId)
-        if (!ctch) throw `Couldn't find spear with _id ${ctchId}`
-        return ctch
+        const collection = await dbService.getCollection(COLLECTION);
+        const criteria = { _id: ObjectId.createFromHexString(spearId) }
+        const spear = await collection.findOne(criteria)
+        if (!spear) throw new Error('Couldnt get spear')
+        return spear
     } catch (err) {
-        loggerService.error(`Couldn't get spear`, err);
+        loggerService.error(`Couldn't get spear`);
         throw err
     }
 }
 
 async function remove(spearId) {
     try {
-        const spearIdx = speares.findIndex(ctch => ctch._id === spearId)
-        if (spearIdx === -1) throw `Couldn't remove spear with _id ${spearId}`
-        speares.splice(spearIdx, 1)
-        return _saveSpearesToFile()
+        const collection = await dbService.getCollection(COLLECTION);
+        const criteria = { _id: ObjectId.cacheHexString(spearId) }
+        const res = await collection.remove(criteria);
+
+        if (res.deletedCount === 0) throw new Error("Could't remove spear")
     } catch (err) {
-        loggerService.error(`Couldn't get spear`, err);
+        loggerService.error(`Couldn't remove spear`);
         throw err
     }
 }
 
 async function save(spearToSave) {
     try {
+        const collection = await dbService.getCollection(COLLECTION);
         if (spearToSave._id) {
-            const idx = speares.findIndex(ctch => ctch._id === spearToSave._id)
-            if (idx === -1) throw `Couldn't update spear with _id ${spearToSave._id}`
-            speares[idx] = spearToSave
+            const { _id, ...nonIdSpear } = spearToSave;
+            const criteria = { _id: ObjectId.createFromHexString(_id) }
+            const res = await collection.updateOne(criteria, nonIdSpear)
+
+            if (res.modifiedCount === 0) throw new Error("Couldnt update spear")
         } else {
-            spearToSave._id = utilService.makeId()
-            speares.push(spearToSave)
+            const res =await collection.insertOne(spearToSave)
+            if (!res.acknowledged) throw new Error("Couldn't add spear")
+            spearToSave[_id]=res.insertedId
         }
-        await _saveSpearesToFile()
         return spearToSave
     } catch (err) {
         loggerService.error(`Couldn't get spear`, err);
@@ -80,14 +73,68 @@ async function save(spearToSave) {
     }
 }
 
+function _getCriteria(filterBy) {
+    var criteria = {};
+    criteria.isPublic = true
+    if (filterBy.weight) {
+        criteria.weight = { $gte: filterBy.weight }
+    }
+    return criteria;
+}
 
-function _saveSpearesToFile(path = './data/speares.json') {
-    return new Promise((resolve, reject) => {
-        const data = JSON.stringify(speares, null, 4)
-        fs.writeFile(path, data, (err) => {
-            if (err) return reject(err)
-            resolve()
-        })
-    })
+function _getAgrSpearPipeline(filterBy) {
+    const criteria = _getCriteria(filterBy);
+    const match = { $match: criteria }
+    const fishLookup = { $lookup: { from: "fish", localField: "fishId", foreignField: "_id", as: "fishInfo" } }
+    const fishUnwind = { $unwind: "$fishInfo" }
+    const diveLookup = { $lookup: { from: "dive", localField: "diveId", foreignField: "_id", as: "diveInfo" } }
+    const diveUnwind = { $unwind: "$diveInfo" }
+    const userLookup = { $lookup: { from: "user", localField: "diveInfo.ownerId", foreignField: "_id", as: "userInfo" } }
+    const userUnwind = { $unwind: "userInfo" }
+    const postLookupCriteria = _postLookupCriteria(filterBy);
+    const postMatch = { $match: postLookupCriteria }
+    const project = {
+        $project: {
+            _id: 1,
+            "diveInfo.date": 1,
+            "diveInfo.userInfo.fullname": 1,
+            "diveInfo.userInfo.username": 1,
+            weight: 1,
+            "fishInfo.name": 1,
+            "fishInfo.nameHE": 1,
+            imgURL: 1
+        }
+    }
+    const pipline = [
+        match,
+        fishLookup,
+        fishUnwind,
+        diveLookup,
+        diveUnwind,
+        userLookup,
+        userUnwind,
+        postMatch,
+        project
+    ]
+    return pipline
+}
+
+function _postLookupCriteria(filterBy) {
+    const postLookupCriteria = {}
+    if (filterBy.fishname) {
+        postLookupCriteria["fishInfo.name"] = { $regex: filterBy.fishname }
+        postLookupCriteria["fishInfo.nameHe"] = { $regex: filterBy.fishname }
+    }
+    if (filterBy.startDate) {
+        postLookupCriteria["diveInfo.date"] = { $gte: filterBy.startDate }
+    }
+    if (filterBy.endDate) {
+        postLookupCriteria["diveInfo.date"] = { $lte: filterBy.endDate }
+    }
+    if (filterBy.user) {
+        postLookupCriteria["diveInfo.userInfo.username"] = { $regex: filterBy.user }
+        postLookupCriteria["diveInfo.userInfo.fullname"] = { $regex: filterBy.user }
+    }
+    return postLookupCriteria
 }
 

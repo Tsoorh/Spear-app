@@ -97,6 +97,3 @@ function _getCriteria(filterBy){
     return 
 }
 
-        // date: req.query.date,
-        // fish: req.query.fish,
-        // owner: req.query.owner

@@ -4,7 +4,7 @@ import { loggerService } from "../../service/logger.service.js"
 
 const COLLECTION = 'dive'
 
-const diveService = {
+export const diveService = {
     query,
     getById,
     update,

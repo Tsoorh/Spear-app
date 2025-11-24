@@ -1,6 +1,8 @@
 import { loggerService } from "../../service/logger.service.js"
+import { diveService } from "./dive.service.js"
 
-async function getDives(req, res) {
+
+export async function getDives(req, res) {
     const filterBy = {
         startDate: req.query.startdate,
         endDate: req.query.enddate,
@@ -16,7 +18,7 @@ async function getDives(req, res) {
         res.send(401).json("Could't get dives")
     }
 }
-async function getById(req, res) {
+export async function getById(req, res) {
     const { diveId } = req.params
     try {
         const dive = await diveService.getById(diveId)
@@ -27,7 +29,7 @@ async function getById(req, res) {
         res.send(401).json("Couldn't get dive")
     }
 }
-async function saveDive(req, res) {
+export async function saveDive(req, res) {
     const { dive } = req.body
     try {
         var diveToSend
@@ -43,7 +45,7 @@ async function saveDive(req, res) {
         res.send(401).json("Couldn't save dive")
     }
 }
-async function removeDive(req, res) {
+export async function removeDive(req, res) {
     const { diveId } = req.params
     try {
         const removedDiveId = await diveService.remove(diveId)

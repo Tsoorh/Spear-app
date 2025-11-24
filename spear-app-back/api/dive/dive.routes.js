@@ -1,4 +1,5 @@
 import express from 'express';
+import { getById, getDives, removeDive, saveDive } from './dive.controller.js';
 
 const router = express.Router()
 

@@ -1,10 +1,15 @@
 import express from "express";
-import { getSpeares } from "./spear.controller.js";
+import { getSpears,getSpear,updateSpear,addSpear,removeSpear } from "./spear.controller.js";
 
 const router = express.Router();
 
 
-router.get('/', getSpeares);
+router.get('/', getSpears);
+router.get('/:spearId', getSpear);
+router.put('/:spearId', updateSpear);
+router.post('/', addSpear);
+router.delete('/:spearId', removeSpear);
+
 
 
 

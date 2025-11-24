@@ -46,6 +46,7 @@ async function remove(spearId) {
         const res = await collection.remove(criteria);
 
         if (res.deletedCount === 0) throw new Error("Could't remove spear")
+        return spearId
     } catch (err) {
         loggerService.error(`Couldn't remove spear`);
         throw err

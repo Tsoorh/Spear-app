@@ -49,11 +49,13 @@ async function getById(userId) {
     try {
         const collection = await dbService.getCollection(COLLECTION)
         const criteria = { _id: ObjectId.createFromHexString(userId) }
+        console.log("🚀 ~ getById ~ criteria:", criteria)
 
         const user = await collection.findOne(criteria)
         if (!user) throw new Error("No user found")
 
         const miniUser = _getMiniUser(user)
+        console.log("🚀 ~ getById ~ miniUser:", miniUser)
         return miniUser
     } catch (err) {
         loggerService.error("Cannot get user by id")

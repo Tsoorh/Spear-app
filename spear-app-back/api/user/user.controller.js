@@ -17,8 +17,12 @@ export async function getById(req, res) {
     const { userId } = req.params
     try {
         const user = await userService.getById(userId)
+        console.log("🚀 ~ getById ~ user:", user)
         if (!user) return { msg: 'No user found' }
+        return user
+
     } catch (err) {
+        
         console.log("🚀 ~ getById ~ err:", err)
         loggerService.error('Cannot get user', err)
         throw err;

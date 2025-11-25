@@ -15,7 +15,7 @@ export async function getDives(req, res) {
     } catch (err) {
         console.log("🚀 ~ getDives ~ err:", err)
         loggerService.error("Could't get dives", err)
-        res.send(401).json("Could't get dives")
+        res.status(401).send("Could't get dives")
     }
 }
 export async function getById(req, res) {
@@ -26,23 +26,23 @@ export async function getById(req, res) {
     } catch (err) {
         console.log("🚀 ~ getById ~ err:", err)
         loggerService.error("Couldn't get dive")
-        res.send(401).json("Couldn't get dive")
+        res.status(401).send("Couldn't get dive")
     }
 }
 export async function saveDive(req, res) {
-    const { dive } = req.body
+    const dive = req.body
     try {
-        var diveToSend
+        let diveToSend = dive
         if (dive._id) {
             diveToSend = await diveService.update(dive)
         } else {
             diveToSend = await diveService.add(dive)
         }
-        res.send(diveToSend);
+        res.json(diveToSend);
     } catch (err) {
         console.log("🚀 ~ saveDive ~ err:", err)
         loggerService.error("Couldn't save dive")
-        res.send(401).json("Couldn't save dive")
+        res.status(401).send("Couldn't save dive")
     }
 }
 export async function removeDive(req, res) {
@@ -53,6 +53,6 @@ export async function removeDive(req, res) {
     } catch (err) {
         console.log("🚀 ~ removeDive ~ err:", err)
         loggerService.error("Couldn't remove dive")
-        res.send(401).json("Couldn't remove dive")
+        res.status(401).send("Couldn't remove dive")
     }
 }

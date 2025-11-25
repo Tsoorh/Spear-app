@@ -3,7 +3,7 @@ import { getById, getUsers, removeUser, saveUser } from './user.controller.js';
 
 const router = express.Router()
 
-router.get('/:userId',getUsers)
+router.get('/',getUsers)
 router.get('/:userId',getById)
 router.post('/',saveUser)
 router.put('/:userId',saveUser)

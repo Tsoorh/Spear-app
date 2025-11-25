@@ -33,8 +33,8 @@ export async function updateSpear(req, res) {
         const spearRes = await spearService.save(spear);
         return spearRes;
     } catch (err) {
-        loggerService.error("Couldn't")
-        res.status(400).send()
+        loggerService.error("Couldn't update spear")
+        res.status(400).send("Couldn't update spear")
     }
 }
 export async function addSpear(req, res) {
@@ -43,8 +43,8 @@ export async function addSpear(req, res) {
         const spearWithId = await spearService.save(spear)
         return spearWithId;
     } catch (err) {
-        loggerService.error("Couldn't")
-        res.status(400).send()
+        loggerService.error("Couldn't add spear")
+        res.status(400).send("Couldn't add spear")
     }
 }
 export async function removeSpear(req, res) {
@@ -53,7 +53,7 @@ export async function removeSpear(req, res) {
         const removedId = await spearService.remove(spearId)
         return removedId
     } catch (err) {
-        loggerService.error("Couldn't")
-        res.status(400).send()
+        loggerService.error("Couldn't remove spear")
+        res.status(400).send("Couldn't remove spear")
     }
 }

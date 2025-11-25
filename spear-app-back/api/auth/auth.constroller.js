@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import cryptr from "cryptr";
-import { loggerService } from "../../service/logger.service";
-import { authService } from "./auth.service";
+import { loggerService } from "../../service/logger.service.js";
+import { authService } from "./auth.service.js";
 
 export async function login(req, res) {
   const { username, password } = req.body;

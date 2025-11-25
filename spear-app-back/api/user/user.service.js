@@ -1,26 +1,41 @@
 import { loggerService } from '../../service/logger.service.js';
 import { dbService } from "../../service/db.service.js";
-import { ObjectId } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 
 
 const COLLECTION = 'user';
 
 
 export const userService = {
+    query,
     getByUser,
     getById,
-    save,
-    remove
+    add,
+    update
 }
 // const users = "./data/user.json"
 
-export async function getByUser(username) {
+async function query(filterBy){
+    try {
+        const criteria = _getCriteria(filterBy)
+        const collection =await dbService.getCollection(COLLECTION)
+        const usersCurser =await collection.find(criteria);
+        const users = usersCurser.toArray()
+
+        return users;
+    } catch (err) {
+        loggerService.error("Cannot get users")
+        throw err;
+    }
+}
+
+async function getByUser(username) {
     try {
         const collection = await dbService.getCollection(COLLECTION)
         const criteria = { $regex: { username } }
 
         const user = await collection.findOne(criteria)
-        if (!user) throw new Error("Couldn't get user")
+        if (!user) return undefined
 
         const miniUser = _getMiniUser(user)
         return miniUser
@@ -36,7 +51,7 @@ async function getById(userId) {
         const criteria = { _id: ObjectId.createFromHexString(userId) }
 
         const user = await collection.findOne(criteria)
-        if (!user) throw new Error("Couldn't get user")
+        if (!user) throw new Error("No user found")
 
         const miniUser = _getMiniUser(user)
         return miniUser
@@ -53,7 +68,8 @@ async function add(user) {
         if (!res.acknowledged) throw new Error("Couldn't add user")
         user._Id = res.insertedId;
 
-        return user
+        const miniUser = _getMiniUser(user)
+        return miniUser
     } catch (err) {
         loggerService.error("Cannot add user")
         throw err;
@@ -76,20 +92,15 @@ async function update(user) {
 
     }
 }
-async function remove(userId) {
-    try {
-        const collection = await dbService.getCollection(COLLECTION)
-        const criteria = { _id: ObjectId.createFromHexString(userId) }
-        const res = await collection.deleteOne(criteria)
 
-        if (res.deletedCount === 0) throw new Error("Couldn't remove user")
-        return userId
-    } catch (err) {
-        loggerService.error("Cannot remove user")
-        throw err;
+function _getCriteria(filterBy){
+    var criteria = {}
+    if(filterBy.txt){
+        criteria.username = {$regex:filterBy.txt}
+        criteria.fullname = {$regex:filterBy.txt}
     }
+    return criteria
 }
-
 
 function _getMiniUser(user) {
     const miniUser = {

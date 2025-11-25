@@ -7,4 +7,4 @@ route.post('/register',signup)
 route.post('/logout',logout)
 
 
-export const authRoute = route;
+export const authRouter = route;

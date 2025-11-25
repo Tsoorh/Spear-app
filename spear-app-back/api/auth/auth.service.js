@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import { userService } from "../user/user.service.js";
 import Cryptr from "cryptr";
+import { logout } from "./auth.constroller.js";
+import { dbService } from "../../service/db.service.js";
 
 const cryptr = new Cryptr(process.env.SECRET_KEY);
 
@@ -51,16 +53,22 @@ async function login(username, password) {
   return miniUser;
 }
 
-async function getLoginToken(user) {
-  const str = JSON.stringify(user);
-  const encryptedStr = cryptr.encrypt(str);
-  return encryptedStr;
-}
-
 async function register({ username, password, name }) {
-    const saltRounds = 10;
+  const saltRounds = 10;
 
-    if(!username || !password || !fullname) return 'missing required information';
-    
-    const userExist = userService.getByUser(name)
+  if (!username || !password || !fullname) return 'missing required information';
+
+  const userExist = await userService.getByUser(name)
+  if (userExist !== undefined) throw new Error("Username already taken!")
+
+  const hash = await bcrypt.hash(password, saltRounds);
+  const userToSave = {
+    username,
+    password: hash,
+    fullname
+  }
+
+
+  const miniUser = await userService.add(userToSave);
+  return miniUser;
 }
